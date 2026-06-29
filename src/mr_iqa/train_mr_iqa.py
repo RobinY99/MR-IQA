@@ -39,7 +39,6 @@ class MRIQATrainingArguments:
     image_root: Optional[str] = field(default=None)
     max_samples: Optional[int] = field(default=None)
     dataset_seed: int = field(default=42)
-    data_seed: Optional[int] = field(default=None)
 
     reward_funcs: str = field(default="margin")
     variance_mode: str = field(default="unit")
@@ -180,7 +179,9 @@ class MRIQADataset:
                 )
         if not samples:
             raise ValueError("No valid MR-IQA samples found.")
-        seed = args.data_seed if args.data_seed is not None else args.dataset_seed
+        seed = getattr(args, "_effective_data_seed", None)
+        if seed is None:
+            seed = args.dataset_seed
         rng = random.Random(seed)
         rng.shuffle(samples)
         if args.max_samples is not None:
@@ -442,6 +443,7 @@ def build_reward_funcs(spec: str):
 def main():
     parser = TrlParser((MRIQATrainingArguments, GRPOConfig))
     script_args, training_args = parser.parse_args_and_config()
+    script_args._effective_data_seed = getattr(training_args, "data_seed", None)
 
     global MARGIN_VARIANCE_MODE
     MARGIN_VARIANCE_MODE = str(script_args.variance_mode).strip().lower()
