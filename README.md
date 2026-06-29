@@ -1,12 +1,17 @@
 # MR-IQA
 
 <p align="center">
+  <a href="assets/mr_iqa_overview.pdf"><img src="assets/mr_iqa_overview.png" alt="MR-IQA unified margin view and training pipeline" width="96%"></a>
+</p>
+
+<p align="center">
   <strong>MR-IQA: A Unified Margin View for Image Quality Assessment</strong><br>
   Training, validation, and 8-GPU evaluation code for margin-aware blind image quality assessment.
 </p>
 
 <p align="center">
   <a href="https://huggingface.co/RobinY99/MR-IQA">Model Weights</a> |
+  <a href="assets/mr_iqa_overview.pdf">Overview PDF</a> |
   <a href="#3-training">Training</a> |
   <a href="#4-evaluation">Evaluation</a> |
   <a href="#citation">Citation</a>
@@ -187,6 +192,7 @@ configs/      DeepSpeed configuration
 data/         Relative-path training, validation, and test manifests
 scripts/      2B/4B training and 8-GPU evaluation launchers
 src/mr_iqa/   Training, scoring, parsing, and evaluation code
+assets/       Project overview figure and source PDF
 ```
 
 ## License
