@@ -6,9 +6,14 @@ import math
 import os
 import random
 import re
+import sys
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional
+
+if __package__ is None or __package__ == "":
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from trl import TrlParser
 from trl.trainer.grpo_config import GRPOConfig
