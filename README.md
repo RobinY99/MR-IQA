@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
+  <span>arXiv</span> |
   <a href="https://huggingface.co/RobinY99/MR-IQA">Model Weights</a> |
-  <a href="assets/mr_iqa_overview.pdf">Overview PDF</a> |
   <a href="reports/released_model_validation_history.md">Validation History</a> |
   <a href="#3-training">Training</a> |
   <a href="#4-evaluation">Evaluation</a> |
