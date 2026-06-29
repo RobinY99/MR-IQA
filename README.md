@@ -10,11 +10,12 @@ Private images, large raw datasets, checkpoints, and generated experiment output
 
 ## 1. Environment Setup
 
-Create an isolated Python environment before installing project dependencies:
+Create an isolated Python environment before installing project dependencies. The release was smoke-tested with Python 3.12, PyTorch 2.8.0 built for CUDA 12.6, and a CUDA 12.5 toolkit. This CUDA toolkit / PyTorch CUDA build combination is accepted by PyTorch for these scripts.
 
 ```bash
-conda create -n mr-iqa python=3.10 -y
+conda create -n mr-iqa python=3.12 -y
 conda activate mr-iqa
+pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu126
 pip install -r requirements.txt
 ```
 
@@ -23,10 +24,11 @@ If your cluster manages environments with `venv` instead of conda:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu126
 pip install -r requirements.txt
 ```
 
-Install the PyTorch build that matches your CUDA driver if the default wheel is not suitable for your machine. `CUDA_HOME` is only needed when packages compile CUDA extensions; the launch scripts add `src/` to `PYTHONPATH` automatically.
+If your machine uses a different CUDA stack, install the matching PyTorch wheel first, then install `requirements.txt`. `CUDA_HOME` is only needed when packages compile CUDA extensions; the launch scripts add `src/` to `PYTHONPATH` automatically.
 
 Optional runtime overrides:
 
@@ -34,6 +36,19 @@ Optional runtime overrides:
 export CUDA_HOME=<cuda-toolkit-root>
 export PYTHON_BIN=python3
 export REPORT_TO=none
+```
+
+Reference training stack:
+
+```text
+Python 3.12
+PyTorch 2.8.0 + CUDA 12.6 wheel
+CUDA toolkit 12.5
+DeepSpeed 0.18.4
+Transformers 5.5.0
+TRL 1.0.0
+Accelerate 1.13.0
+PEFT 0.18.1
 ```
 
 ## 2. Data Preparation
