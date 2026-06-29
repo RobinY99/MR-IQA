@@ -1,7 +1,7 @@
 # MR-IQA
 
 <p align="center">
-  <a href="assets/paper/figure1_v3.pdf"><img src="assets/paper/mr_iqa_figures_overview.png" alt="MR-IQA paper figures: unified margin view and training pipeline" width="96%"></a>
+  <a href="assets/paper/mr_iqa_figure_1.pdf"><img src="assets/paper/mr_iqa_figures_overview.png" alt="MR-IQA paper figures: unified margin view and training pipeline" width="96%"></a>
 </p>
 
 <p align="center">
@@ -11,8 +11,8 @@
 
 <p align="center">
   <a href="https://huggingface.co/RobinY99/MR-IQA">Model Weights</a> |
-  <a href="assets/paper/figure1_v3.pdf">Figure 1 PDF</a> |
-  <a href="assets/paper/mriqa_f2_v8.pdf">Figure 2 PDF</a> |
+  <a href="assets/paper/mr_iqa_figure_1.pdf">Figure 1 PDF</a> |
+  <a href="assets/paper/mr_iqa_figure_2.pdf">Figure 2 PDF</a> |
   <a href="#3-training">Training</a> |
   <a href="#4-evaluation">Evaluation</a> |
   <a href="#citation">Citation</a>
