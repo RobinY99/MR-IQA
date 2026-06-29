@@ -1,0 +1,65 @@
+{
+  "note": "Image paths are IMAGE_ROOT-relative. Source names below are provenance labels only and do not encode machine-specific paths.",
+  "files": [
+    {
+      "file": "data/test_manifests/agiqa3k.json",
+      "source_name": "deqa_score_agiqa3k_test_1to5.json",
+      "count": 2982,
+      "sha256": "1d1e247e937441df98930c687c6d546f001ec29bdbbb6f566448e95ce2a62d74"
+    },
+    {
+      "file": "data/test_manifests/csiq.json",
+      "source_name": "deqa_score_csiq_test_1to5.json",
+      "count": 866,
+      "sha256": "9b440cb2d8ccfe9c81155e8c666fd892d9d14be1c69bd10170b3a1f6e2f420ca"
+    },
+    {
+      "file": "data/test_manifests/kadid_full.json",
+      "source_name": "deqa_score_kadid_full_test_1to5.json",
+      "count": 10125,
+      "sha256": "e4827f84f8867fffb2ed4da18c94bc81610e775d5228fbdcab7114b3f4090221"
+    },
+    {
+      "file": "data/test_manifests/koniq.json",
+      "source_name": "deqa_score_koniq_test_1to5.json",
+      "count": 2010,
+      "sha256": "28c9f76964a3646062f3f5643749970282a4032f650b190a5341822b8e9f9446"
+    },
+    {
+      "file": "data/test_manifests/livew.json",
+      "source_name": "deqa_score_livew_test_1to5.json",
+      "count": 1162,
+      "sha256": "bf474311bc8937a377efdcabed05638db541ccb879963ef52cda9663e24dc49c"
+    },
+    {
+      "file": "data/test_manifests/spaq_full.json",
+      "source_name": "deqa_score_spaq_full_test_1to5.json",
+      "count": 11125,
+      "sha256": "c380eb928e05335fcca5604f49b7cabc6dd4372102c82894c09e76dc6763a86d"
+    },
+    {
+      "file": "data/test_manifests/pipal.json",
+      "source_name": "deqa_score_pipal_test_1to5.json",
+      "count": 4640,
+      "sha256": "51fc17f1dd3684b0e13ff00e987d54fcba0918e5ca9643a8ac1ec6302da1b771"
+    },
+    {
+      "file": "data/test_manifests/tid2013.json",
+      "source_name": "deqa_score_tid2013_test_1to5.json",
+      "count": 3000,
+      "sha256": "25ceeaa9188997249764db531186459c756d4b47ff7c36aeeed221df237dc1b6"
+    },
+    {
+      "file": "data/train_manifest/train.jsonl",
+      "source_name": "train.jsonl",
+      "count": 7046,
+      "sha256": "526e4d454cfca8aa062cd9419bc144d0e5888487476ef5c442c492fafacb1ed6"
+    },
+    {
+      "file": "data/val_manifests/koniq_val_200_seed42.json",
+      "source_name": "val_koniq_200_seed42.json",
+      "count": 200,
+      "sha256": "1ff05e48b4d0e9a4afd7c77d8e4505ae31f76389dbbbc7ef7b9d04292c1a3ff1"
+    }
+  ]
+}

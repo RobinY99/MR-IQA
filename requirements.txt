@@ -1,0 +1,13 @@
+accelerate
+deepspeed
+datasets
+numpy
+packaging
+peft
+pillow
+requests
+scipy
+torch
+tqdm
+transformers
+trl
