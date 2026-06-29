@@ -182,6 +182,10 @@ src/mr_iqa/   Training, scoring, parsing, and evaluation code
 assets/       Project overview PDF and PNG preview
 ```
 
+## 6. Acknowledgements
+
+We sincerely thank the open-source community for making this work possible. In particular, MR-IQA builds on the broader ecosystem around [Qwen3-VL](https://github.com/QwenLM/Qwen3-VL) and is inspired by community progress in visual quality reasoning such as [VisualQuality-R1](https://github.com/tianhewu/visualquality-r1).
+
 ## License
 
 This project is released under the MIT License. See `LICENSE` for details.
