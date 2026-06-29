@@ -1,32 +1,19 @@
-# MR-IQA
+# MR-IQA: A Unified Margin View of Regression and Ranking for Blind Image Quality Assessment
 
 <p align="center">
   <a href="assets/mr_iqa_overview.pdf"><img src="assets/mr_iqa_overview.png" alt="MR-IQA unified margin view and training pipeline" width="96%"></a>
 </p>
 
 <p align="center">
-  <strong>MR-IQA: A Unified Margin View for Image Quality Assessment</strong><br>
-  Training, validation, and 8-GPU evaluation code for margin-aware blind image quality assessment.
-</p>
-
-<p align="center">
   <a href="https://huggingface.co/RobinY99/MR-IQA">Model Weights</a> |
   <a href="assets/mr_iqa_overview.pdf">Overview PDF</a> |
+  <a href="reports/released_model_validation_history.md">Validation History</a> |
   <a href="#3-training">Training</a> |
   <a href="#4-evaluation">Evaluation</a> |
   <a href="#citation">Citation</a>
 </p>
 
-MR-IQA trains a vision-language model to predict perceptual image quality scores while preserving calibrated score margins between images. Instead of using only ordinal pair preferences, the reward compares the model's predicted score gap with the human opinion gap normalized by annotation uncertainty. This gives the model a denser signal: not just which image is better, but how far apart the two images should be.
-
-Released model weights are available on Hugging Face: [RobinY99/MR-IQA](https://huggingface.co/RobinY99/MR-IQA). Private images, large raw datasets, checkpoints, and generated experiment outputs are intentionally not committed.
-
-## Highlights
-
-- **Margin-aware reward:** uses distributional margin consistency to align predicted score differences with human opinion distributions.
-- **Two training modes:** launch full training either without validation or with post-training 8-GPU validation.
-- **Reproducible manifests:** committed JSON/JSONL files use relative image paths only, so users can bind their own image roots.
-- **Cluster-friendly scripts:** model paths, image roots, output directories, and reporting backends are provided through environment variables.
+We derive that regression and ranking are approximately equivalent under a unified margin view. Based on this observation, we propose MR-IQA for margin learning in blind image quality assessment.
 
 ## 1. Environment Setup
 
@@ -203,7 +190,7 @@ This project is released under the MIT License. See `LICENSE` for details.
 
 ```bibtex
 @article{mriqa,
-  title={MR-IQA: A Unified Margin View for Image Quality Assessment},
+  title={MR-IQA: A Unified Margin View of Regression and Ranking for Blind Image Quality Assessment},
   author={TODO},
   journal={TODO}
 }
