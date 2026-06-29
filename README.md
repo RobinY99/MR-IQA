@@ -1,12 +1,35 @@
 # MR-IQA
 
-**MR-IQA: A Unified Margin View for Image Quality Assessment**
+<p align="center">
+  <a href="assets/paper/figure1_v3.pdf"><img src="assets/paper/mr_iqa_figures_overview.png" alt="MR-IQA paper figures: unified margin view and training pipeline" width="96%"></a>
+</p>
 
-This repository contains the training, validation, and evaluation scaffolding for MR-IQA. It is designed for reproducible image quality assessment experiments with explicit separation between code, manifests, local image roots, and generated outputs.
+<p align="center">
+  <strong>MR-IQA: A Unified Margin View for Image Quality Assessment</strong><br>
+  Training, validation, and 8-GPU evaluation code for margin-aware blind image quality assessment.
+</p>
 
-Released model weights are available on Hugging Face: [RobinY99/MR-IQA](https://huggingface.co/RobinY99/MR-IQA).
+<p align="center">
+  <a href="https://huggingface.co/RobinY99/MR-IQA">Model Weights</a> |
+  <a href="assets/paper/figure1_v3.pdf">Figure 1 PDF</a> |
+  <a href="assets/paper/mriqa_f2_v8.pdf">Figure 2 PDF</a> |
+  <a href="#3-training">Training</a> |
+  <a href="#4-evaluation">Evaluation</a> |
+  <a href="#citation">Citation</a>
+</p>
 
-Private images, large raw datasets, checkpoints, and generated experiment outputs are intentionally not committed.
+MR-IQA trains a vision-language model to predict perceptual image quality scores while preserving calibrated score margins between images. Instead of using only ordinal pair preferences, the reward compares the model's predicted score gap with the human opinion gap normalized by annotation uncertainty. This gives the model a denser signal: not just which image is better, but how far apart the two images should be.
+
+The overview figure above is rendered from the paper's source PDFs: Figure 1 uses `figs/figure1_v3.pdf`, and Figure 2 uses `figs/mriqa_f2_v8.pdf`.
+
+Released model weights are available on Hugging Face: [RobinY99/MR-IQA](https://huggingface.co/RobinY99/MR-IQA). Private images, large raw datasets, checkpoints, and generated experiment outputs are intentionally not committed.
+
+## Highlights
+
+- **Margin-aware reward:** uses distributional margin consistency to align predicted score differences with human opinion distributions.
+- **Two training modes:** launch full training either without validation or with post-training 8-GPU validation.
+- **Reproducible manifests:** committed JSON/JSONL files use relative image paths only, so users can bind their own image roots.
+- **Cluster-friendly scripts:** model paths, image roots, output directories, and reporting backends are provided through environment variables.
 
 ## 1. Environment Setup
 
@@ -131,7 +154,7 @@ or the validation-enabled wrapper:
 bash scripts/train_mr_iqa_4b_8gpu_with_val.sh
 ```
 
-## 4. Testing
+## 4. Evaluation
 
 Single-dataset evaluation:
 
@@ -164,6 +187,16 @@ bash scripts/generalization_eval_8gpu.sh
 ```
 
 Override the default generalization set with `DATASETS="koniq spaq_full"` if you only want a subset.
+
+## 5. Repository Layout
+
+```text
+configs/      DeepSpeed configuration
+data/         Relative-path training, validation, and test manifests
+scripts/      2B/4B training and 8-GPU evaluation launchers
+src/mr_iqa/   Training, scoring, parsing, and evaluation code
+assets/       Paper figure PDFs and README preview assets
+```
 
 ## License
 
