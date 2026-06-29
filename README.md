@@ -1,7 +1,7 @@
 # MR-IQA: A Unified Margin View of Regression and Ranking for Blind Image Quality Assessment
 
 <p align="center">
-  <a href="assets/mr_iqa_overview.pdf"><img src="assets/mr_iqa_overview.png" alt="MR-IQA unified margin view and training pipeline" width="96%"></a>
+  <a href="assets/mr_iqa_overview.pdf"><strong>MR-IQA Overview Figure (PDF)</strong></a>
 </p>
 
 <p align="center">
@@ -179,7 +179,7 @@ configs/      DeepSpeed configuration
 data/         Relative-path training, validation, and test manifests
 scripts/      2B/4B training and 8-GPU evaluation launchers
 src/mr_iqa/   Training, scoring, parsing, and evaluation code
-assets/       Project overview figure and source PDF
+assets/       Project overview PDF
 ```
 
 ## License
