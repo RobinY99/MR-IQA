@@ -52,7 +52,7 @@ PyTorch 2.8.0+cu126
 TorchVision 0.23.0+cu126
 CUDA_HOME /usr/local/cuda-12.5
 DeepSpeed 0.18.4
-Transformers 4.56.2
+Transformers 4.57.1
 TRL 0.9.6
 Accelerate 1.11.0
 PEFT 0.17.1
