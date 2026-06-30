@@ -42,6 +42,42 @@ require_env() {
   fi
 }
 
+has_loadable_weights() {
+  local model_dir="$1"
+  [[ -f "${model_dir}/model.safetensors" \
+    || -f "${model_dir}/model.safetensors.index.json" \
+    || -f "${model_dir}/pytorch_model.bin" \
+    || -f "${model_dir}/pytorch_model.bin.index.json" ]]
+}
+
+prepare_validation_model_dir() {
+  local model_dir="$1"
+  if has_loadable_weights "${model_dir}"; then
+    echo "${model_dir}"
+    return 0
+  fi
+
+  if [[ ! -f "${model_dir}/zero_to_fp32.py" ]]; then
+    echo "No loadable model weights or zero_to_fp32.py found in ${model_dir}" >&2
+    exit 1
+  fi
+
+  local full_dir="${VALIDATION_MODEL_DIR:-${model_dir}/full_model_for_validation}"
+  mkdir -p "${full_dir}"
+  if ! has_loadable_weights "${full_dir}"; then
+    echo "[validation] recovering ZeRO checkpoint to ${full_dir}" >&2
+    python "${model_dir}/zero_to_fp32.py" "${model_dir}" "${full_dir}"
+    for file in \
+      config.json generation_config.json tokenizer_config.json tokenizer.json \
+      processor_config.json chat_template.jinja preprocessor_config.json \
+      video_preprocessor_config.json vocab.json merges.txt special_tokens_map.json; do
+      [[ -f "${model_dir}/${file}" ]] && cp "${model_dir}/${file}" "${full_dir}/${file}"
+    done
+  fi
+
+  echo "${full_dir}"
+}
+
 require_env MODEL_PATH
 require_env DATA_FILES
 require_env IMAGE_ROOT
@@ -95,7 +131,8 @@ fi
 PYTHONPATH="${REPO_ROOT}/src:${PYTHONPATH:-}" torchrun --nproc_per_node="${NUM_GPUS}" --master_port="${MASTER_PORT}" "${TRAIN_SCRIPT}" "${TRAIN_ARGS[@]}"
 
 if [[ "${RUN_VALIDATION}" == "1" ]]; then
-  MODEL_DIR="${OUTPUT_DIR}" \
+  VALIDATION_MODEL_DIR="$(prepare_validation_model_dir "${OUTPUT_DIR}")"
+  MODEL_DIR="${VALIDATION_MODEL_DIR}" \
   VAL_DATA_FILE="${VAL_DATA_FILE}" \
   IMAGE_ROOT="${VAL_IMAGE_ROOT}" \
   OUT_JSON="${VAL_OUTPUT_JSON}" \
