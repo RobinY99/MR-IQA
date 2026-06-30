@@ -17,7 +17,7 @@ We derive that regression and ranking are approximately equivalent under a unifi
 
 ## 1. Environment Setup
 
-Create an isolated Python environment before installing project dependencies. The release was smoke-tested with Python 3.12, PyTorch 2.8.0 built for CUDA 12.6, and a CUDA 12.5 toolkit. This CUDA toolkit / PyTorch CUDA build combination is accepted by PyTorch for these scripts.
+Create an isolated Python environment before installing project dependencies. The public training code was smoke-tested with Python 3.12, PyTorch 2.8.0 built for CUDA 12.6, and a CUDA 12.5 toolkit. This CUDA toolkit / PyTorch CUDA build combination is accepted by PyTorch for these scripts.
 
 ```bash
 conda create -n mr-iqa python=3.12 -y
@@ -45,7 +45,7 @@ export PYTHON_BIN=python3
 export REPORT_TO=none
 ```
 
-Reference training stack:
+Reference smoke-test stack:
 
 ```text
 Python 3.12
@@ -56,6 +56,7 @@ Transformers 5.5.0
 TRL 1.0.0
 Accelerate 1.13.0
 PEFT 0.18.1
+Weights & Biases 0.25.1
 ```
 
 ## 2. Data Preparation
