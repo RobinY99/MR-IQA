@@ -492,7 +492,19 @@ class QwenVLGRPOTrainerDS(Trainer):
             mm_token_type_ids = self._build_mm_token_type_ids_from_input_ids(prompt_ids)
 
         with unwrap_model_for_generation(model, self.accelerator) as unwrapped:
-            prompt_completion_ids = unwrapped.generate(**prompt_inputs, generation_config=self.generation_config)
+            was_gradient_checkpointing = bool(getattr(unwrapped, "is_gradient_checkpointing", False))
+            old_use_cache = getattr(unwrapped.config, "use_cache", None)
+            if was_gradient_checkpointing and hasattr(unwrapped, "gradient_checkpointing_disable"):
+                unwrapped.gradient_checkpointing_disable()
+            if old_use_cache is not None:
+                unwrapped.config.use_cache = True
+            try:
+                prompt_completion_ids = unwrapped.generate(**prompt_inputs, generation_config=self.generation_config)
+            finally:
+                if old_use_cache is not None:
+                    unwrapped.config.use_cache = old_use_cache
+                if was_gradient_checkpointing and hasattr(unwrapped, "gradient_checkpointing_enable"):
+                    unwrapped.gradient_checkpointing_enable()
             prompt_length = prompt_ids.size(1)
             prompt_ids = prompt_completion_ids[:, :prompt_length]
             completion_ids = prompt_completion_ids[:, prompt_length:]
