@@ -34,6 +34,24 @@ SAVE_STRATEGY="${SAVE_STRATEGY:-epoch}"
 SAVE_TOTAL_LIMIT="${SAVE_TOTAL_LIMIT:-2}"
 USE_LORA="${USE_LORA:-false}"
 
+if [[ -z "${CUDA_HOME:-}" ]]; then
+  for cuda_dir in /usr/local/cuda-12.5 /usr/local/cuda; do
+    if [[ -x "${cuda_dir}/bin/nvcc" ]]; then
+      export CUDA_HOME="${cuda_dir}"
+      break
+    fi
+  done
+fi
+
+if [[ -n "${CUDA_HOME:-}" ]]; then
+  export PATH="${CUDA_HOME}/bin:${PATH}"
+  export LD_LIBRARY_PATH="${CUDA_HOME}/lib64:${LD_LIBRARY_PATH:-}"
+fi
+
+export DS_SKIP_CUDA_CHECK="${DS_SKIP_CUDA_CHECK:-1}"
+export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
+
 require_env() {
   local name="$1"
   if [[ -z "${!name:-}" ]]; then

@@ -34,7 +34,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-`requirements.txt` includes the PyTorch wheel index and the dependencies used by the training and evaluation scripts. If your default package index cannot resolve a training-time package, use the same package mirror/index as the training server. `CUDA_HOME` is only needed when packages compile CUDA extensions; the launch scripts add `src/` to `PYTHONPATH` automatically.
+`requirements.txt` includes the PyTorch wheel index and the dependencies used by the training and evaluation scripts. If your default package index cannot resolve a training-time package, use the same package mirror/index as the training server. The launch scripts add `src/` to `PYTHONPATH` and use `CUDA_HOME` when CUDA extensions need to be compiled.
 
 Optional runtime overrides:
 
