@@ -34,7 +34,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-`requirements.txt` includes the PyTorch wheel index and a normalized version of the W&B environment used by the released run. `requirements-wandb-0617.txt` keeps the fuller W&B package snapshot for reproducibility auditing. If your default package index cannot resolve a training-time package, use the same package mirror/index as the training server. The launch scripts add `src/` to `PYTHONPATH` and use `CUDA_HOME` when CUDA extensions need to be compiled.
+`requirements.txt` includes the PyTorch wheel index and a normalized version of the W&B environment used by the released run. If your default package index cannot resolve a training-time package, use the same package mirror/index as the training server. The launch scripts add `src/` to `PYTHONPATH` and use `CUDA_HOME` when CUDA extensions need to be compiled.
 
 Optional runtime overrides:
 
