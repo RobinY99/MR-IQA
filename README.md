@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <span>arXiv</span> |
+  <a href="https://arxiv.org/abs/2606.29760">arXiv</a> |
   <a href="https://huggingface.co/RobinY99/MR-IQA">Model Weights</a> |
   <a href="reports/released_model_validation_history.md">Validation History</a> |
   <a href="#3-training">Training</a> |
@@ -17,7 +17,7 @@ We derive that regression and ranking are approximately equivalent under a unifi
 
 ## 1. Environment Setup
 
-Create an isolated Python environment before installing project dependencies. The dependency pins in `requirements.txt` follow the conda environment used for the MR-IQA training runs.
+Create an isolated Python environment before installing project dependencies.
 
 ```bash
 conda create -n mr-iqa python=3.12.13 -y
@@ -33,7 +33,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-`requirements.txt` includes the PyTorch wheel index and pins the PyTorch, TorchVision, Transformers, TRL, Accelerate, PEFT, DeepSpeed, and logging dependencies used in the training environment. `CUDA_HOME` is only needed when packages compile CUDA extensions; the launch scripts add `src/` to `PYTHONPATH` automatically.
+`requirements.txt` includes the PyTorch wheel index and the dependencies used by the training and evaluation scripts. `CUDA_HOME` is only needed when packages compile CUDA extensions; the launch scripts add `src/` to `PYTHONPATH` automatically.
 
 Optional runtime overrides:
 
@@ -41,25 +41,6 @@ Optional runtime overrides:
 export CUDA_HOME=<cuda-toolkit-root>
 export PYTHON_BIN=python3
 export REPORT_TO=none
-```
-
-Reference training environment:
-
-```text
-Conda environment name used by the server launch script: 23
-Python 3.12.13
-PyTorch 2.8.0+cu126
-TorchVision 0.23.0+cu126
-CUDA_HOME /usr/local/cuda-12.5
-DeepSpeed 0.18.4
-Transformers 5.5.0
-TRL 1.3.0
-Accelerate 1.11.0
-PEFT 0.17.1
-Datasets 4.8.5
-NumPy 1.26.4
-Pillow 11.3.0
-Weights & Biases 0.25.1
 ```
 
 ## 2. Data Preparation
@@ -197,9 +178,13 @@ This project is released under the MIT License. See `LICENSE` for details.
 ## Citation
 
 ```bibtex
-@article{mriqa,
+@misc{li2026mriqaunifiedmarginview,
   title={MR-IQA: A Unified Margin View of Regression and Ranking for Blind Image Quality Assessment},
-  author={TODO},
-  journal={TODO}
+  author={Yuan Li and Youyuan Lin and Zitang Sun and Yung-Hao Yang and Kiyofumi Miyoshi and Chenhui Chu and Shin'ya Nishida},
+  year={2026},
+  eprint={2606.29760},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2606.29760}
 }
 ```
