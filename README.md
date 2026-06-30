@@ -17,23 +17,23 @@ We derive that regression and ranking are approximately equivalent under a unifi
 
 ## 1. Environment Setup
 
-Create an isolated Python environment before installing project dependencies. The public training code was smoke-tested with Python 3.12, PyTorch 2.8.0 built for CUDA 12.6, and a CUDA 12.5 toolkit. This CUDA toolkit / PyTorch CUDA build combination is accepted by PyTorch for these scripts.
+Create an isolated Python environment before installing project dependencies. The dependency pins in `requirements.txt` follow the conda environment used for the MR-IQA training runs.
 
 ```bash
-conda create -n mr-iqa python=3.12 -y
+conda create -n mr-iqa python=3.12.13 -y
 conda activate mr-iqa
-pip install -r requirements-cu126.txt
+pip install -r requirements.txt
 ```
 
 If your cluster manages environments with `venv` instead of conda:
 
 ```bash
-python -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements-cu126.txt
+pip install -r requirements.txt
 ```
 
-`requirements-cu126.txt` pins the CUDA 12.6 PyTorch wheel source and installs `torch==2.8.0+cu126` plus `torchvision==0.23.0+cu126` before the project dependencies. If your machine uses a different CUDA stack, install the matching PyTorch wheel first, then install `requirements.txt`. `CUDA_HOME` is only needed when packages compile CUDA extensions; the launch scripts add `src/` to `PYTHONPATH` automatically.
+`requirements.txt` includes the PyTorch wheel index and pins the PyTorch, TorchVision, Transformers, TRL, Accelerate, PEFT, DeepSpeed, and logging dependencies used in the training environment. `CUDA_HOME` is only needed when packages compile CUDA extensions; the launch scripts add `src/` to `PYTHONPATH` automatically.
 
 Optional runtime overrides:
 
@@ -43,18 +43,22 @@ export PYTHON_BIN=python3
 export REPORT_TO=none
 ```
 
-Reference smoke-test stack:
+Reference training environment:
 
 ```text
-Python 3.12
-PyTorch 2.8.0 + CUDA 12.6 wheel
-TorchVision 0.23.0 + CUDA 12.6 wheel
-CUDA toolkit 12.5
+Conda environment: 23
+Python 3.12.13
+PyTorch 2.8.0+cu126
+TorchVision 0.23.0+cu126
+CUDA_HOME /usr/local/cuda-12.5
 DeepSpeed 0.18.4
-Transformers 5.5.0
-TRL 1.0.0
-Accelerate 1.13.0
-PEFT 0.18.1
+Transformers 4.56.2
+TRL 0.9.6
+Accelerate 1.11.0
+PEFT 0.17.1
+Datasets 4.0.0
+NumPy 1.26.4
+Pillow 11.3.0
 Weights & Biases 0.25.1
 ```
 
@@ -101,26 +105,6 @@ MODEL_PATH=<hf-model-id-or-local-model-dir> \
 DATA_FILES=data/train_manifest/train.jsonl \
 IMAGE_ROOT=<train-image-root> \
 OUTPUT_DIR=outputs/mr-iqa-2b \
-VARIANCE_MODE=unit \
-bash scripts/train_mr_iqa_2b_8gpu.sh
-```
-
-Run a one-step smoke training batch before launching a long run:
-
-```bash
-MODEL_PATH=<hf-model-id-or-local-model-dir> \
-DATA_FILES=data/train_manifest/train.jsonl \
-IMAGE_ROOT=<train-image-root> \
-OUTPUT_DIR=outputs/smoke-mr-iqa-2b \
-NUM_GPUS=8 \
-MAX_SAMPLES=16 \
-MAX_STEPS=1 \
-PER_DEVICE_TRAIN_BATCH_SIZE=1 \
-NUM_GENERATIONS=2 \
-NUM_ITERATIONS=1 \
-MAX_COMPLETION_LENGTH=32 \
-SAVE_STRATEGY=no \
-SAVE_TOTAL_LIMIT=1 \
 VARIANCE_MODE=unit \
 bash scripts/train_mr_iqa_2b_8gpu.sh
 ```
