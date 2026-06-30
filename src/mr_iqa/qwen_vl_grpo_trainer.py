@@ -38,7 +38,13 @@ try:
     from trl.trainer.grpo_config import GRPOConfig
 except ImportError:
     from mr_iqa.grpo_config import MRGRPOConfig as GRPOConfig
-from trl.models import create_reference_model, prepare_deepspeed, unwrap_model_for_generation
+from trl.models import create_reference_model, unwrap_model_for_generation
+try:
+    from trl.models import prepare_deepspeed
+except ImportError:
+    def prepare_deepspeed(model, accelerator):
+        model.eval()
+        return accelerator.prepare_model(model, evaluation_mode=True)
 from transformers.integrations.deepspeed import is_deepspeed_zero3_enabled
 from transformers.utils import is_peft_available
 from accelerate.utils import is_peft_model, set_seed
