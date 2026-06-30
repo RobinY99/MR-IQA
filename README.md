@@ -22,8 +22,7 @@ Create an isolated Python environment before installing project dependencies. Th
 ```bash
 conda create -n mr-iqa python=3.12 -y
 conda activate mr-iqa
-pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu126
-pip install -r requirements.txt
+pip install -r requirements-cu126.txt
 ```
 
 If your cluster manages environments with `venv` instead of conda:
@@ -31,11 +30,10 @@ If your cluster manages environments with `venv` instead of conda:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu126
-pip install -r requirements.txt
+pip install -r requirements-cu126.txt
 ```
 
-If your machine uses a different CUDA stack, install the matching PyTorch wheel first, then install `requirements.txt`. `CUDA_HOME` is only needed when packages compile CUDA extensions; the launch scripts add `src/` to `PYTHONPATH` automatically.
+`requirements-cu126.txt` pins the CUDA 12.6 PyTorch wheel source and installs `torch==2.8.0+cu126` plus `torchvision==0.23.0+cu126` before the project dependencies. If your machine uses a different CUDA stack, install the matching PyTorch wheel first, then install `requirements.txt`. `CUDA_HOME` is only needed when packages compile CUDA extensions; the launch scripts add `src/` to `PYTHONPATH` automatically.
 
 Optional runtime overrides:
 
@@ -50,6 +48,7 @@ Reference smoke-test stack:
 ```text
 Python 3.12
 PyTorch 2.8.0 + CUDA 12.6 wheel
+TorchVision 0.23.0 + CUDA 12.6 wheel
 CUDA toolkit 12.5
 DeepSpeed 0.18.4
 Transformers 5.5.0
@@ -102,6 +101,26 @@ MODEL_PATH=<hf-model-id-or-local-model-dir> \
 DATA_FILES=data/train_manifest/train.jsonl \
 IMAGE_ROOT=<train-image-root> \
 OUTPUT_DIR=outputs/mr-iqa-2b \
+VARIANCE_MODE=unit \
+bash scripts/train_mr_iqa_2b_8gpu.sh
+```
+
+Run a one-step smoke training batch before launching a long run:
+
+```bash
+MODEL_PATH=<hf-model-id-or-local-model-dir> \
+DATA_FILES=data/train_manifest/train.jsonl \
+IMAGE_ROOT=<train-image-root> \
+OUTPUT_DIR=outputs/smoke-mr-iqa-2b \
+NUM_GPUS=8 \
+MAX_SAMPLES=16 \
+MAX_STEPS=1 \
+PER_DEVICE_TRAIN_BATCH_SIZE=1 \
+NUM_GENERATIONS=2 \
+NUM_ITERATIONS=1 \
+MAX_COMPLETION_LENGTH=32 \
+SAVE_STRATEGY=no \
+SAVE_TOTAL_LIMIT=1 \
 VARIANCE_MODE=unit \
 bash scripts/train_mr_iqa_2b_8gpu.sh
 ```
