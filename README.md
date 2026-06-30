@@ -18,6 +18,7 @@ We derive that regression and ranking are approximately equivalent under a unifi
 ## 1. Environment Setup
 
 Create an isolated Python environment before installing project dependencies.
+The training environment targets a Linux CUDA machine; macOS or CPU-only machines can still inspect scripts and manifests, but cannot install the CUDA wheels or run the 8-GPU training launchers directly.
 
 ```bash
 conda create -n mr-iqa python=3.12.13 -y
