@@ -34,7 +34,10 @@ except Exception:
 
 from datasets import Dataset, IterableDataset
 from packaging import version
-from trl.trainer.grpo_config import GRPOConfig
+try:
+    from trl.trainer.grpo_config import GRPOConfig
+except ImportError:
+    from mr_iqa.grpo_config import MRGRPOConfig as GRPOConfig
 from trl.models import create_reference_model, prepare_deepspeed, unwrap_model_for_generation
 from transformers.integrations.deepspeed import is_deepspeed_zero3_enabled
 from transformers.utils import is_peft_available
@@ -661,4 +664,3 @@ def build_peft_config(args):
         raise ImportError("peft is required for --use_lora")
     targets = [x.strip() for x in args.lora_target_modules.split(",") if x.strip()]
     return LoraConfig(r=args.lora_r, lora_alpha=args.lora_alpha, lora_dropout=args.lora_dropout, bias=args.lora_bias, target_modules=targets, task_type="CAUSAL_LM")
-

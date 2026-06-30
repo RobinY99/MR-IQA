@@ -16,7 +16,10 @@ if __package__ is None or __package__ == "":
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from trl import TrlParser
-from trl.trainer.grpo_config import GRPOConfig
+try:
+    from trl.trainer.grpo_config import GRPOConfig
+except ImportError:
+    from mr_iqa.grpo_config import MRGRPOConfig as GRPOConfig
 
 from mr_iqa.qwen_vl_grpo_trainer import QwenVLGRPOTrainerDS, build_peft_config
 
