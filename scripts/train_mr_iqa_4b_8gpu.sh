@@ -84,7 +84,7 @@ prepare_validation_model_dir() {
   mkdir -p "${full_dir}"
   if ! has_loadable_weights "${full_dir}"; then
     echo "[validation] recovering ZeRO checkpoint to ${full_dir}" >&2
-    python "${model_dir}/zero_to_fp32.py" "${model_dir}" "${full_dir}"
+    python "${model_dir}/zero_to_fp32.py" "${model_dir}" "${full_dir}" >&2
     for file in \
       config.json generation_config.json tokenizer_config.json tokenizer.json \
       processor_config.json chat_template.jinja preprocessor_config.json \
