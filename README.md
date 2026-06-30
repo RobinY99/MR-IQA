@@ -46,17 +46,17 @@ export REPORT_TO=none
 Reference training environment:
 
 ```text
-Conda environment: 23
+Conda environment name used by the server launch script: 23
 Python 3.12.13
 PyTorch 2.8.0+cu126
 TorchVision 0.23.0+cu126
 CUDA_HOME /usr/local/cuda-12.5
 DeepSpeed 0.18.4
-Transformers 4.57.1
-TRL 0.9.6
+Transformers 5.5.0
+TRL 1.3.0
 Accelerate 1.11.0
 PEFT 0.17.1
-Datasets 4.0.0
+Datasets 4.8.5
 NumPy 1.26.4
 Pillow 11.3.0
 Weights & Biases 0.25.1
