@@ -88,6 +88,7 @@ DATA_FILES=data/train_manifest/train.jsonl \
 IMAGE_ROOT=<train-image-root> \
 OUTPUT_DIR=outputs/mr-iqa-2b \
 VARIANCE_MODE=unit \
+PROMPT_MODE=non_thinking \
 bash scripts/train_mr_iqa_2b_8gpu.sh
 ```
 
@@ -102,6 +103,7 @@ VAL_IMAGE_ROOT=<val-image-root> \
 OUTPUT_DIR=outputs/mr-iqa-2b \
 VAL_OUTPUT_JSON=outputs/mr-iqa-2b/validation/final.json \
 VARIANCE_MODE=unit \
+PROMPT_MODE=non_thinking \
 bash scripts/train_mr_iqa_2b_8gpu_with_val.sh
 ```
 
@@ -113,6 +115,12 @@ sigma  uses the paired ground-truth score sigma
 ```
 
 `PROMPT_MODE` defaults to `non_thinking`. Set `PROMPT_MODE=thinking` to use the two-part thinking prompt and require outputs in the form `<thinking>...</thinking><answer>{"rating": 3.50}</answer>`.
+
+For thinking-mode training, keep the same launch flow and set:
+
+```bash
+PROMPT_MODE=thinking
+```
 
 For a 4B backbone, use:
 
@@ -146,6 +154,7 @@ MODEL_DIR=<model-or-checkpoint> \
 VAL_DATA_FILE=data/val_manifests/koniq_val_200_seed42.json \
 IMAGE_ROOT=<image-root> \
 OUT_JSON=outputs/validation/koniq_val.json \
+PROMPT_MODE=non_thinking \
 bash scripts/validation_eval_8gpu.sh
 ```
 
@@ -156,10 +165,22 @@ MODEL_DIR=<model-or-checkpoint> \
 DATA_DIR=data/test_manifests \
 IMAGE_ROOT=<image-root> \
 OUT_DIR=outputs/generalization \
+PROMPT_MODE=non_thinking \
 bash scripts/generalization_eval_8gpu.sh
 ```
 
 Override the default generalization set with `DATASETS="koniq spaq_full"` if you only want a subset.
+
+Single-image inference:
+
+```bash
+python src/mr_iqa/infer_single_image.py \
+  --model_name_or_path <model-or-checkpoint> \
+  --image_path <image-path> \
+  --prompt_mode non_thinking
+```
+
+For a thinking-mode model, use `--prompt_mode thinking`. If `--max_new_tokens` is not set, single-image inference uses 64 tokens for non-thinking and 256 tokens for thinking.
 
 ## 5. Repository Layout
 
