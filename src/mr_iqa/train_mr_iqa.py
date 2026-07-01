@@ -24,11 +24,16 @@ from mr_iqa.qwen_vl_grpo_trainer import QwenVLGRPOTrainerDS, build_peft_config
 SYSTEM_PROMPT = "You are an image quality assessment assistant. Output only the final score in <answer> </answer> tags."
 USER_PROMPT = (
     "What is your overall rating on the quality of this picture? "
-    "The rating should be a float between 1 and 5, rounded to two decimal places. "
+    "The rating should be a float between 1 and 5, rounded to two decimal places, "
+    "with 1 representing very poor quality and 5 representing excellent quality. "
     "Please only output the final answer with one score in <answer> </answer> tags."
 )
 
 ANSWER_RE = re.compile(r"<answer>\s*([+-]?\d+(?:\.\d+)?)\s*</answer>", re.I | re.S)
+ANSWER_FORMAT_RE = re.compile(
+    r"(?:<think>.*?</think>\s*)?<answer>\s*[+-]?\d+(?:\.\d+)?\s*</answer>",
+    re.I | re.S,
+)
 NUMBER_RE = re.compile(r"-?\d+(?:\.\d+)?")
 
 
@@ -40,7 +45,7 @@ class MRIQATrainingArguments:
     max_samples: Optional[int] = field(default=None)
     dataset_seed: int = field(default=42)
 
-    reward_funcs: str = field(default="margin")
+    reward_funcs: str = field(default="margin,format")
     variance_mode: str = field(default="unit")
     min_gt_std: float = field(default=1e-4)
 
@@ -161,10 +166,8 @@ class MRIQADataset:
                     continue
                 score = self._extract_score(row)
                 std = self._extract_std(row)
-                if score is None:
+                if score is None or std is None:
                     continue
-                if std is None:
-                    std = 1.0
                 samples.append(
                     {
                         "sample_id": row.get("id") or f"sample_{len(samples):07d}",
@@ -432,8 +435,15 @@ def log_margin_metrics(rewards, margin_values, error_values, pair_counts, preds,
 margin_reward.__name__ = "margin_reward"
 
 
+def format_reward(completions, **kwargs):
+    return [1.0 if ANSWER_FORMAT_RE.fullmatch(completion_to_text(c).strip()) else 0.0 for c in completions]
+
+
+format_reward.__name__ = "format_reward"
+
+
 def build_reward_funcs(spec: str):
-    registry = {"margin": margin_reward}
+    registry = {"margin": margin_reward, "format": format_reward}
     funcs = []
     for name in [x.strip() for x in spec.split(",") if x.strip()]:
         funcs.append(registry[name])

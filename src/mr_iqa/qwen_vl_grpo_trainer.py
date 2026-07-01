@@ -645,13 +645,17 @@ class QwenVLGRPOTrainerDS(Trainer):
             super().log(logs)
         self._metrics.clear()
 
+    def _sampler_seed(self):
+        data_seed = getattr(self.args, "data_seed", None)
+        return self.args.seed if data_seed is None else data_seed
+
     def _get_train_sampler(self, train_dataset=None):
         ds = train_dataset if train_dataset is not None else self.train_dataset
         effective = self.args.per_device_train_batch_size * self.accelerator.num_processes * self.args.gradient_accumulation_steps
-        return RepeatRandomSampler(ds, mini_repeat_count=self.num_generations, batch_size=effective // self.num_generations, repeat_count=self.num_iterations, seed=self.args.seed)
+        return RepeatRandomSampler(ds, mini_repeat_count=self.num_generations, batch_size=effective // self.num_generations, repeat_count=self.num_iterations, seed=self._sampler_seed())
 
     def _get_eval_sampler(self, eval_dataset):
-        return RepeatRandomSampler(eval_dataset, mini_repeat_count=self.num_generations, seed=self.args.seed)
+        return RepeatRandomSampler(eval_dataset, mini_repeat_count=self.num_generations, seed=self._sampler_seed())
 
 
 def build_peft_config(args):

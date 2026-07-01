@@ -29,8 +29,8 @@ except Exception:
 
 PROMPT = (
     "What is your overall rating on the quality of this picture? "
-    "The rating should be a float between 1.00 and 5.00, formatted with exactly two digits after the decimal point, "
-    "with 1.00 representing very poor quality and 5.00 representing excellent quality. "
+    "The rating should be a float between 1 and 5, rounded to two decimal places, "
+    "with 1 representing very poor quality and 5 representing excellent quality. "
     "Please only output the final answer with one score in <answer> </answer> tags."
 )
 ANSWER_RE = re.compile(r"<answer>\s*([+-]?\d+(?:\.\d+)?)\s*</answer>", re.I | re.S)
