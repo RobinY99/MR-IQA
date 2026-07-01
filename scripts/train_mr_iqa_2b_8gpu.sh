@@ -11,6 +11,7 @@ OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/outputs/mr-iqa-2b}"
 TRAIN_SCRIPT="${TRAIN_SCRIPT:-${REPO_ROOT}/src/mr_iqa/train_mr_iqa.py}"
 DEEPSPEED_CONFIG="${DEEPSPEED_CONFIG:-${REPO_ROOT}/configs/zero3-offload-auto.json}"
 MASTER_PORT="${MASTER_PORT:-29672}"
+VARIANCE_MODE="${VARIANCE_MODE:-unit}"
 NUM_GPUS="${NUM_GPUS:-8}"
 RUN_VALIDATION="${RUN_VALIDATION:-0}"
 
@@ -106,6 +107,7 @@ common_train_args() {
     --data_seed "${DATA_SEED:-42}"
     --dataset_seed "${DATASET_SEED:-42}"
     --reward_funcs margin,format
+    --variance_mode "${VARIANCE_MODE}"
     --min_gt_std "${MIN_GT_STD}"
     --bf16 true
     --gradient_checkpointing true
