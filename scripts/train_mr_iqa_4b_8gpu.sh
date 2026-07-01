@@ -12,6 +12,7 @@ TRAIN_SCRIPT="${TRAIN_SCRIPT:-${REPO_ROOT}/src/mr_iqa/train_mr_iqa.py}"
 DEEPSPEED_CONFIG="${DEEPSPEED_CONFIG:-${REPO_ROOT}/configs/zero3-offload-auto.json}"
 MASTER_PORT="${MASTER_PORT:-29661}"
 VARIANCE_MODE="${VARIANCE_MODE:-unit}"
+PROMPT_MODE="${PROMPT_MODE:-non_thinking}"
 NUM_GPUS="${NUM_GPUS:-8}"
 RUN_VALIDATION="${RUN_VALIDATION:-0}"
 
@@ -63,6 +64,7 @@ export NCCL_DEBUG="${NCCL_DEBUG:-INFO}"
 export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"
 export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
 export VARIANCE_LOG_PATH
+export PROMPT_MODE
 
 require_env() {
   local name="$1"
@@ -108,6 +110,7 @@ common_train_args() {
     --dataset_seed "${DATASET_SEED:-42}"
     --reward_funcs margin,format
     --variance_mode "${VARIANCE_MODE}"
+    --prompt_mode "${PROMPT_MODE}"
     --min_gt_std "${MIN_GT_STD}"
     --bf16 true
     --gradient_checkpointing true

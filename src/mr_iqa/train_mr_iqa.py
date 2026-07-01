@@ -21,20 +21,66 @@ from trl.trainer.grpo_config import GRPOConfig
 from mr_iqa.qwen_vl_grpo_trainer import QwenVLGRPOTrainerDS, build_peft_config
 
 
-SYSTEM_PROMPT = "You are an image quality assessment assistant. Output only the final score in <answer> </answer> tags."
-USER_PROMPT = (
+NON_THINKING_SYSTEM_PROMPT = (
+    "You are an image quality assessment assistant. Output only the final score in <answer> </answer> tags."
+)
+NON_THINKING_USER_PROMPT = (
     "What is your overall rating on the quality of this picture? "
     "The rating should be a float between 1 and 5, rounded to two decimal places, "
     "with 1 representing very poor quality and 5 representing excellent quality. "
     "Please only output the final answer with one score in <answer> </answer> tags."
 )
+THINKING_SYSTEM_PROMPT = (
+    "A conversation between User and Assistant. The user asks a question, and the Assistant solves it. "
+    "The assistant first thinks about the reasoning process in the mind and then provides the user with the answer. "
+    "The reasoning process and answer are enclosed within <thinking> </thinking> and <answer> </answer> tags, respectively, i.e., "
+    "<thinking> reasoning process here </thinking><answer> answer here </answer>"
+)
+THINKING_USER_PROMPT = (
+    "What is your overall rating on the quality of this picture? "
+    "The rating should be a float between 1 and 5, rounded to two decimal places, "
+    "with 1 representing very poor quality and 5 representing excellent quality. "
+    'Return the final answer in JSON format with the following keys: "rating": The score.'
+)
 
-ANSWER_RE = re.compile(r"<answer>\s*([+-]?\d+(?:\.\d+)?)\s*</answer>", re.I | re.S)
-ANSWER_FORMAT_RE = re.compile(
+SYSTEM_PROMPT = NON_THINKING_SYSTEM_PROMPT
+USER_PROMPT = NON_THINKING_USER_PROMPT
+
+ANSWER_RE = re.compile(
+    r'<answer>\s*(?:\{\s*"?rating"?\s*:\s*)?([+-]?\d+(?:\.\d+)?)(?:\s*\})?\s*</answer>',
+    re.I | re.S,
+)
+NON_THINKING_ANSWER_FORMAT_RE = re.compile(
     r"(?:<think>.*?</think>\s*)?<answer>\s*[+-]?\d+(?:\.\d+)?\s*</answer>",
     re.I | re.S,
 )
+THINKING_ANSWER_FORMAT_RE = re.compile(
+    r'<thinking>[\s\S]+?</thinking>\s*<answer>\s*\{\s*"rating"\s*:\s*[+-]?\d+(?:\.\d+)?\s*\}\s*</answer>',
+    re.I | re.S,
+)
+ANSWER_FORMAT_RE = NON_THINKING_ANSWER_FORMAT_RE
 NUMBER_RE = re.compile(r"-?\d+(?:\.\d+)?")
+
+
+def prompt_config(prompt_mode: str):
+    mode = str(prompt_mode).strip().lower().replace("-", "_")
+    if mode == "non_thinking":
+        return {
+            "mode": mode,
+            "system_prompt": NON_THINKING_SYSTEM_PROMPT,
+            "user_prompt": NON_THINKING_USER_PROMPT,
+            "answer_format_re": NON_THINKING_ANSWER_FORMAT_RE,
+            "solution_template": lambda score: f"<answer>{score:.2f}</answer>",
+        }
+    if mode == "thinking":
+        return {
+            "mode": mode,
+            "system_prompt": THINKING_SYSTEM_PROMPT,
+            "user_prompt": THINKING_USER_PROMPT,
+            "answer_format_re": THINKING_ANSWER_FORMAT_RE,
+            "solution_template": lambda score: f'<answer>{{"rating": {score:.2f}}}</answer>',
+        }
+    raise ValueError("--prompt_mode must be either 'non_thinking' or 'thinking'")
 
 
 @dataclass
@@ -47,6 +93,7 @@ class MRIQATrainingArguments:
 
     reward_funcs: str = field(default="margin,format")
     variance_mode: str = field(default="unit")
+    prompt_mode: str = field(default="non_thinking")
     min_gt_std: float = field(default=1e-4)
 
     model_name_or_path: Optional[str] = field(default=None)
@@ -156,6 +203,7 @@ class MRIQADataset:
 
     def _load_samples(self, args):
         samples = []
+        cfg = prompt_config(args.prompt_mode)
         for data_file in self.data_files:
             for row in self._load_rows(data_file):
                 image_path = row.get("image") or row.get("image_path") or row.get("img_path")
@@ -172,11 +220,11 @@ class MRIQADataset:
                     {
                         "sample_id": row.get("id") or f"sample_{len(samples):07d}",
                         "image_path": image_path,
-                        "solution": f"<answer>{score:.2f}</answer>",
+                        "solution": cfg["solution_template"](score),
                         "target_mean": float(score),
                         "target_std": max(float(std), float(args.min_gt_std)),
-                        "system_prompt": SYSTEM_PROMPT,
-                        "custom_question": USER_PROMPT,
+                        "system_prompt": cfg["system_prompt"],
+                        "custom_question": cfg["user_prompt"],
                         "dataset_name": row.get("dataset_name", "iqa"),
                     }
                 )
@@ -455,10 +503,13 @@ def main():
     script_args, training_args = parser.parse_args_and_config()
     script_args._effective_data_seed = getattr(training_args, "data_seed", None)
 
-    global MARGIN_VARIANCE_MODE
+    global MARGIN_VARIANCE_MODE, ANSWER_FORMAT_RE
     MARGIN_VARIANCE_MODE = str(script_args.variance_mode).strip().lower()
     if MARGIN_VARIANCE_MODE not in {"unit", "sigma"}:
         raise ValueError("--variance_mode must be either 'unit' or 'sigma'")
+    prompt_cfg = prompt_config(script_args.prompt_mode)
+    script_args.prompt_mode = prompt_cfg["mode"]
+    ANSWER_FORMAT_RE = prompt_cfg["answer_format_re"]
 
     if script_args.model_name_or_path:
         training_args.model_name_or_path = script_args.model_name_or_path

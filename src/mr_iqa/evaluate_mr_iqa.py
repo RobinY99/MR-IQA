@@ -27,14 +27,56 @@ except Exception:
     Qwen2VLForConditionalGeneration = None
 
 
-PROMPT = (
+NON_THINKING_PROMPT = (
     "What is your overall rating on the quality of this picture? "
     "The rating should be a float between 1 and 5, rounded to two decimal places, "
     "with 1 representing very poor quality and 5 representing excellent quality. "
     "Please only output the final answer with one score in <answer> </answer> tags."
 )
-ANSWER_RE = re.compile(r"<answer>\s*([+-]?\d+(?:\.\d+)?)\s*</answer>", re.I | re.S)
+THINKING_SYSTEM_PROMPT = (
+    "A conversation between User and Assistant. The user asks a question, and the Assistant solves it. "
+    "The assistant first thinks about the reasoning process in the mind and then provides the user with the answer. "
+    "The reasoning process and answer are enclosed within <thinking> </thinking> and <answer> </answer> tags, respectively, i.e., "
+    "<thinking> reasoning process here </thinking><answer> answer here </answer>"
+)
+THINKING_PROMPT = (
+    "What is your overall rating on the quality of this picture? "
+    "The rating should be a float between 1 and 5, rounded to two decimal places, "
+    "with 1 representing very poor quality and 5 representing excellent quality. "
+    'Return the final answer in JSON format with the following keys: "rating": The score.'
+)
+PROMPT = NON_THINKING_PROMPT
+ANSWER_RE = re.compile(
+    r'<answer>\s*(?:\{\s*"?rating"?\s*:\s*)?([+-]?\d+(?:\.\d+)?)(?:\s*\})?\s*</answer>',
+    re.I | re.S,
+)
 NUMBER_RE = re.compile(r"(?<![\d.])([1-5](?:\.\d+)?)(?![\d.])")
+
+
+def prompt_config(prompt_mode: str) -> tuple[str | None, str]:
+    mode = str(prompt_mode).strip().lower().replace("-", "_")
+    if mode == "non_thinking":
+        return None, NON_THINKING_PROMPT
+    if mode == "thinking":
+        return THINKING_SYSTEM_PROMPT, THINKING_PROMPT
+    raise ValueError("--prompt_mode must be either 'non_thinking' or 'thinking'")
+
+
+def build_messages(image_path: str, prompt_mode: str) -> list[dict[str, Any]]:
+    system_prompt, user_prompt = prompt_config(prompt_mode)
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append(
+        {
+            "role": "user",
+            "content": [
+                {"type": "image", "image": image_path},
+                {"type": "text", "text": user_prompt},
+            ],
+        }
+    )
+    return messages
 
 
 def load_rows(path: str) -> list[dict[str, Any]]:
@@ -129,15 +171,7 @@ def model_class(model_path: str):
 
 
 def generate_one(model, processor, image_path: str, args) -> str:
-    messages = [
-        {
-            "role": "user",
-            "content": [
-                {"type": "image", "image": image_path},
-                {"type": "text", "text": PROMPT},
-            ],
-        }
-    ]
+    messages = build_messages(image_path, args.prompt_mode)
     text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = processor(text=[text], images=[load_image(image_path)], padding=True, return_tensors="pt").to(model.device)
     with torch.no_grad():
@@ -171,6 +205,7 @@ def main() -> None:
     ap.add_argument("--max_new_tokens", type=int, default=64)
     ap.add_argument("--temperature", type=float, default=0.0)
     ap.add_argument("--top_p", type=float, default=1.0)
+    ap.add_argument("--prompt_mode", choices=("non_thinking", "thinking"), default="non_thinking")
     args = ap.parse_args()
 
     rows = load_rows(args.data_file)
@@ -213,6 +248,7 @@ def main() -> None:
                 "raw_pred_score": raw_pred,
                 "pred_score": pred,
                 "completion": completion,
+                "prompt_mode": args.prompt_mode,
                 "row": row,
             }
         )
@@ -225,6 +261,7 @@ def main() -> None:
     summary = {
         "model_name_or_path": args.model_name_or_path,
         "adapter_model": args.adapter_model or None,
+        "prompt_mode": args.prompt_mode,
         "num_total": len(results),
         "num_valid": len(valid),
         "num_missing_or_bad_gold": missing,

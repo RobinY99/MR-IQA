@@ -11,6 +11,11 @@ OUT_DIR="${OUT_DIR:-${REPO_ROOT}/outputs/generalization}"
 EVAL_SCRIPT="${EVAL_SCRIPT:-${REPO_ROOT}/src/mr_iqa/evaluate_mr_iqa.py}"
 NUM_GPUS="${NUM_GPUS:-8}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
+PROMPT_MODE="${PROMPT_MODE:-non_thinking}"
+DEFAULT_MAX_NEW_TOKENS=64
+if [[ "${PROMPT_MODE}" == "thinking" ]]; then
+  DEFAULT_MAX_NEW_TOKENS=256
+fi
 
 require_env() {
   local name="$1"
@@ -40,8 +45,9 @@ for dataset in "${datasets[@]}"; do
       --output_json "${shard_dir}/shard_${shard_id}.json" \
       --num_shards "${NUM_GPUS}" \
       --shard_id "${shard_id}" \
-      --max_new_tokens 64 \
-      --temperature 0.0 &
+      --max_new_tokens "${MAX_NEW_TOKENS:-${DEFAULT_MAX_NEW_TOKENS}}" \
+      --temperature "${TEMPERATURE:-0.0}" \
+      --prompt_mode "${PROMPT_MODE}" &
     pids+=("$!")
   done
   for pid in "${pids[@]}"; do

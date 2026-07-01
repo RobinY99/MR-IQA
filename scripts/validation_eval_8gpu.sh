@@ -11,6 +11,11 @@ OUT_JSON="${OUT_JSON:-${REPO_ROOT}/outputs/validation/val.json}"
 EVAL_SCRIPT="${EVAL_SCRIPT:-${REPO_ROOT}/src/mr_iqa/evaluate_mr_iqa.py}"
 NUM_GPUS="${NUM_GPUS:-8}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
+PROMPT_MODE="${PROMPT_MODE:-non_thinking}"
+DEFAULT_MAX_NEW_TOKENS=64
+if [[ "${PROMPT_MODE}" == "thinking" ]]; then
+  DEFAULT_MAX_NEW_TOKENS=256
+fi
 
 require_env() {
   local name="$1"
@@ -41,8 +46,9 @@ for shard_id in $(seq 0 $((NUM_GPUS - 1))); do
     --output_json "${SHARD_DIR}/shard_${shard_id}.json" \
     --num_shards "${NUM_GPUS}" \
     --shard_id "${shard_id}" \
-    --max_new_tokens "${MAX_NEW_TOKENS:-64}" \
-    --temperature "${TEMPERATURE:-0.0}" &
+    --max_new_tokens "${MAX_NEW_TOKENS:-${DEFAULT_MAX_NEW_TOKENS}}" \
+    --temperature "${TEMPERATURE:-0.0}" \
+    --prompt_mode "${PROMPT_MODE}" &
   pids+=("$!")
 done
 

@@ -112,6 +112,8 @@ unit   uses variance scale 1
 sigma  uses the paired ground-truth score sigma
 ```
 
+`PROMPT_MODE` defaults to `non_thinking`. Set `PROMPT_MODE=thinking` to use the two-part thinking prompt and require outputs in the form `<thinking>...</thinking><answer>{"rating": 3.50}</answer>`.
+
 For a 4B backbone, use:
 
 ```bash
@@ -133,7 +135,8 @@ python src/mr_iqa/evaluate_mr_iqa.py \
   --model_name_or_path <model-or-checkpoint> \
   --data_file data/test_manifests/koniq.json \
   --image_root <image-root> \
-  --output_json outputs/eval/koniq.json
+  --output_json outputs/eval/koniq.json \
+  --prompt_mode non_thinking
 ```
 
 8-GPU validation-only evaluation:
